@@ -1,25 +1,34 @@
-/**
- * محرك إزالة الخلفية — @imgly/background-removal (مجاني 100% — WASM محلي)
- * يشتغل بالكامل في المتصفح بدون أي سيرفر أو API Key
- * مع fallback يدوي كشبكة أمان أخيرة
- */
-
 import { removeBackground } from '@imgly/background-removal';
+import { CloudAiService } from './cloudAiService.js';
 
 export class BackgroundRemover {
   /**
-   * عزل الخلفية باستخدام @imgly/background-removal (WASM محلي)
+   * عزل الخلفية باستخدام الذكاء الاصطناعي (سحابي فائق أو محلي WASM)
    * @param {HTMLImageElement} imgElement
    * @param {Function} onProgress
+   * @param {string} engineMode - 'auto' | 'cloud' | 'local'
    * @returns {Promise<Blob>}
    */
-  static async removeBackground(imgElement, onProgress = () => {}) {
+  static async removeBackground(imgElement, onProgress = () => {}, engineMode = 'auto') {
+    // 1. تحويل الصورة لـ Blob أولاً
+    const imageBlob = await this._imgToBlob(imgElement);
+
+    // 2. فحص إمكانية استخدام الذكاء الاصطناعي السحابي فائق الجودة
+    const shouldUseCloud = (engineMode === 'cloud') || (engineMode === 'auto' && CloudAiService.hasApiKey());
+
+    if (shouldUseCloud) {
+      try {
+        const cloudBlob = await CloudAiService.removeBackgroundCloud(imageBlob, null, onProgress);
+        onProgress({ stage: 'complete', percent: 100, message: 'تم العزل السحابي بنجاح بدقة استوديو! ✨' });
+        return cloudBlob;
+      } catch (cloudErr) {
+        console.warn('Cloud removal failed or model loading, falling back to local engine:', cloudErr);
+        onProgress({ stage: 'fallback', percent: 20, message: 'جاري التبديل للمحرك المحلي السريع...' });
+      }
+    }
+
     try {
-      onProgress({ stage: 'starting', percent: 10, message: 'جاري تحميل نموذج الذكاء الاصطناعي...' });
-
-      // تحويل الصورة لـ Blob أولاً
-      const imageBlob = await this._imgToBlob(imgElement);
-
+      onProgress({ stage: 'starting', percent: 15, message: 'جاري تهيئة نموذج الذكاء الاصطناعي المحلي...' });
       onProgress({ stage: 'computing', percent: 30, message: 'جاري تحليل الصورة وعزل الشخص بالذكاء الاصطناعي...' });
 
       // استخدام @imgly/background-removal بنموذج ISNet FP16 السريع والدقيق

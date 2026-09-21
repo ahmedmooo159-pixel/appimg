@@ -1,11 +1,7 @@
-/**
- * المتحكم الرئيسي للتطبيق (Application Controller)
- * يربط بين الذكاء الاصطناعي، خوارزميات معالجة الصور، مدقق الرقم القومي، وواجهة المستخدم
- */
-
 import confetti from 'canvas-confetti';
 import { BackgroundRemover } from './bgRemover.js';
 import { ImageEnhancer } from './enhancer.js';
+import { CloudAiService } from './cloudAiService.js';
 import { parseNationalID } from './nidValidator.js';
 import { CardRenderer, PHOTO_PRESETS } from './cardRenderer.js';
 import { createSamplePortraitDataUrl } from './sampleImage.js';
@@ -22,6 +18,7 @@ const state = {
   badgeStyle: 'strip',          // 'strip' | 'badge' | 'none'
   fullName: '',
   nationalId: '',
+  engineMode: localStorage.getItem('engine_mode') || 'auto', // 'auto' | 'cloud' | 'local'
   enhancement: {
     sharpness: 45,
     denoise: 30,
@@ -46,6 +43,14 @@ const DOM = {
   btnLoadSample: document.getElementById('btnLoadSample'),
   btnChangePhoto: document.getElementById('btnChangePhoto'),
   btnResetEnhance: document.getElementById('btnResetEnhance'),
+
+  btnOpenSettings: document.getElementById('btnOpenSettings'),
+  btnCloseSettings: document.getElementById('btnCloseSettings'),
+  settingsModal: document.getElementById('settingsModal'),
+  inputHfApiKey: document.getElementById('inputHfApiKey'),
+  btnSaveSettings: document.getElementById('btnSaveSettings'),
+  btnClearApiKey: document.getElementById('btnClearApiKey'),
+  headerEngineStatusText: document.getElementById('headerEngineStatusText'),
 
   processingStatusBar: document.getElementById('processingStatusBar'),
   processingStatusText: document.getElementById('processingStatusText'),
@@ -105,6 +110,7 @@ const DOM = {
  */
 function init() {
   setupUploadEvents();
+  setupSettingsModal();
   setupComparisonSlider();
   setupPresetEvents();
   setupBgColorEvents();
@@ -112,6 +118,61 @@ function init() {
   setupInputEvents();
   setupEnhancementSliders();
   setupExportButtons();
+}
+
+/**
+ * إعداد نافذة إعدادات الذكاء الاصطناعي والمفتاح السحابي
+ */
+function setupSettingsModal() {
+  const updateHeaderStatus = () => {
+    const hasKey = CloudAiService.hasApiKey();
+    if (state.engineMode === 'cloud' || (state.engineMode === 'auto' && hasKey)) {
+      DOM.headerEngineStatusText.textContent = '🚀 سحابي فائق (RMBG-1.4 4K)';
+    } else {
+      DOM.headerEngineStatusText.textContent = '⚡ محرك محلي فوري';
+    }
+  };
+
+  DOM.btnOpenSettings.addEventListener('click', () => {
+    DOM.inputHfApiKey.value = CloudAiService.getApiKey();
+    const radio = document.querySelector(`input[name="engineMode"][value="${state.engineMode}"]`);
+    if (radio) radio.checked = true;
+    DOM.settingsModal.style.display = 'flex';
+  });
+
+  DOM.btnCloseSettings.addEventListener('click', () => {
+    DOM.settingsModal.style.display = 'none';
+  });
+
+  DOM.settingsModal.addEventListener('click', (e) => {
+    if (e.target === DOM.settingsModal) {
+      DOM.settingsModal.style.display = 'none';
+    }
+  });
+
+  DOM.btnSaveSettings.addEventListener('click', () => {
+    const key = DOM.inputHfApiKey.value.trim();
+    CloudAiService.setApiKey(key);
+
+    const selectedRadio = document.querySelector('input[name="engineMode"]:checked');
+    if (selectedRadio) {
+      state.engineMode = selectedRadio.value;
+      localStorage.setItem('engine_mode', state.engineMode);
+    }
+
+    DOM.settingsModal.style.display = 'none';
+    updateHeaderStatus();
+    showToast('تم حفظ إعدادات الذكاء الاصطناعي بنجاح!', 'success');
+  });
+
+  DOM.btnClearApiKey.addEventListener('click', () => {
+    CloudAiService.setApiKey('');
+    DOM.inputHfApiKey.value = '';
+    updateHeaderStatus();
+    showToast('تم مسح المفتاح والعودة للمحرك المحلي');
+  });
+
+  updateHeaderStatus();
 }
 
 /**
@@ -224,7 +285,8 @@ async function startBackgroundRemovalAndEnhance() {
         DOM.processingProgressBar.style.width = `${percent}%`;
         DOM.processingPercentText.textContent = `${percent}%`;
         if (message) DOM.processingStatusText.textContent = message;
-      }
+      },
+      state.engineMode
     );
 
     // تنظيف الـ Object URL السابق لمنع تسريب الذاكرة

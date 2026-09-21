@@ -43,12 +43,20 @@
     </a>
 
     <div class="header-badges">
+      <button id="btnOpenSettings" class="btn-settings-header" title="إعدادات الذكاء الاصطناعي و API">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+        <span id="headerEngineStatusText">محرك الذكاء الاصطناعي</span>
+      </button>
+
       <div class="tag-free">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
           <path d="m9 12 2 2 4-4"/>
         </svg>
-        <span>مجاني 100% • خصوصية تامة محلياً</span>
+        <span>مجاني 100%</span>
       </div>
     </div>
   </header>
@@ -412,6 +420,81 @@
       </div>
     </div>
   </footer>
+
+  <!-- نافذة إعدادات الذكاء الاصطناعي و API المجاني (Settings Modal) -->
+  <div id="settingsModal" class="modal-overlay" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2">
+            <path d="M12 2v20"/><path d="m17 5-5-3-5 3"/><path d="m17 19-5 3-5-3"/>
+          </svg>
+          <h3>إعدادات محرك الذكاء الاصطناعي (AI Engines)</h3>
+        </div>
+        <button id="btnCloseSettings" class="btn-close-modal" aria-label="إغلاق">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <p class="modal-description">
+          يتيح لك التطبيق التبديل بين <strong>المحرك السحابي فائق الجودة (Hugging Face RMBG-1.4 4K)</strong> و<strong>المحرك المحلي الفوري داخل المتصفح</strong>.
+        </p>
+
+        <!-- اختيار نوع المحرك -->
+        <div class="form-group">
+          <label class="form-label">نمط المعالجة المفضل:</label>
+          <div class="engine-options-grid">
+            <label class="engine-option-card">
+              <input type="radio" name="engineMode" value="auto" checked />
+              <div class="engine-card-content">
+                <strong>🔄 تلقائي ذكي (موصى به)</strong>
+                <small>يستخدم الذكاء السحابي إذا وجد المفتاح، أو المحلي تلقائياً</small>
+              </div>
+            </label>
+            <label class="engine-option-card">
+              <input type="radio" name="engineMode" value="cloud" />
+              <div class="engine-card-content">
+                <strong>🚀 سحابي فائق (RMBG-1.4 + GFPGAN)</strong>
+                <small>أعلى دقة استوديو 4K لعزل الشعر وترميم الصور المطبوعة</small>
+              </div>
+            </label>
+            <label class="engine-option-card">
+              <input type="radio" name="engineMode" value="local" />
+              <div class="engine-card-content">
+                <strong>⚡ محلي فوري (WASM Offline)</strong>
+                <small>يعمل داخل المتصفح بدون أي مفاتيح أو اتصال خارجي</small>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- إدخال مفتاح API المجاني -->
+        <div class="form-group" style="margin-top: 1rem;">
+          <label class="form-label" for="inputHfApiKey">
+            <span>مفتاح Hugging Face Access Token (مجاني 100%):</span>
+          </label>
+          <input type="password" id="inputHfApiKey" class="form-input" placeholder="hf_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" dir="ltr" />
+          
+          <div class="api-help-box">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <div>
+              <span>كيف تحصل على مفتاحك المجاني في 30 ثانية؟</span>
+              <a href="https://huggingface.co/settings/tokens" target="_blank" rel="noopener noreferrer">
+                اضغط هنا لفتح صفحة Hugging Face Tokens ↗
+              </a>
+              (سجّل مجاناً واضغط <strong>Create new token</strong> واختر نوع <strong>Read</strong> ثم انسخه هنا).
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="btnSaveSettings" class="btn btn-primary" style="flex: 1;">حفظ الإعدادات</button>
+        <button id="btnClearApiKey" class="btn btn-secondary" style="flex: 0.6;">مسح المفتاح</button>
+      </div>
+    </div>
+  </div>
 
   <!-- حاوية التنبيهات المنبثقة (Toasts) -->
   <div id="toastContainer" class="toast-container"></div>
