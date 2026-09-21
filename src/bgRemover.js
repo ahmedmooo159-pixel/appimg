@@ -22,21 +22,30 @@ export class BackgroundRemover {
 
       onProgress({ stage: 'computing', percent: 30, message: 'جاري تحليل الصورة وعزل الشخص بالذكاء الاصطناعي...' });
 
-      // استخدام @imgly/background-removal — محلي بالكامل
+      // استخدام @imgly/background-removal بنموذج ISNet FP16 السريع والدقيق
       const resultBlob = await removeBackground(imageBlob, {
-        model: 'medium',  // توازن بين السرعة والجودة
+        publicPath: 'https://cdn.jsdelivr.net/npm/@imgly/background-removal-data@1.7.0/dist/',
+        model: 'isnet_fp16',
         output: {
           format: 'image/png',
           quality: 1.0
         },
         progress: (key, current, total) => {
-          // حساب النسبة التقريبية بناءً على مراحل التحميل
-          if (key === 'fetch:model') {
-            const pct = Math.min(60, 30 + Math.round((current / total) * 30));
-            onProgress({ stage: 'downloading', percent: pct, message: 'جاري تحميل نموذج الذكاء الاصطناعي...' });
-          } else if (key === 'compute:inference') {
-            const pct = Math.min(90, 60 + Math.round((current / total) * 30));
-            onProgress({ stage: 'computing', percent: pct, message: 'جاري عزل الخلفية بالذكاء الاصطناعي...' });
+          if (total && total > 0) {
+            const pct = Math.min(95, 30 + Math.round((current / total) * 65));
+            const mbDownloaded = (current / (1024 * 1024)).toFixed(1);
+            const mbTotal = (total / (1024 * 1024)).toFixed(1);
+            onProgress({
+              stage: 'downloading',
+              percent: pct,
+              message: `جاري تنزيل نموذج الذكاء الاصطناعي... (${mbDownloaded} / ${mbTotal} MB)`
+            });
+          } else {
+            onProgress({
+              stage: 'computing',
+              percent: 85,
+              message: 'جاري عزل الخلفية بالذكاء الاصطناعي...'
+            });
           }
         }
       });
