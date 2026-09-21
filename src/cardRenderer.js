@@ -52,12 +52,14 @@ export class CardRenderer {
     name = '',
     nationalId = '',
     presetKey = 'id_4x6',
+    bgColor = '#ffffff',
     badgeStyle = 'strip', // 'strip' | 'badge' | 'minimal' | 'none'
     fontFamily = 'Cairo, sans-serif',
     textColor = '#1e293b',
     badgeBgColor = '#ffffff',
     showBorder = true,
-    borderColor = '#cbd5e1'
+    borderColor = '#cbd5e1',
+    framing = {}
   }) {
     const preset = PHOTO_PRESETS[presetKey] || PHOTO_PRESETS['id_4x6'];
     
@@ -88,12 +90,22 @@ export class CardRenderer {
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
 
-    // 1. ملء خلفية الكانفاس باللون الأبيض النقي
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, canvasW, canvasH);
+    // 1. ملء خلفية الكانفاس باللون المختار
+    if (bgColor && bgColor !== 'transparent') {
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(0, 0, canvasW, canvasH);
+    } else {
+      ctx.clearRect(0, 0, canvasW, canvasH);
+    }
 
-    // 2. رسم الصورة داخل منطقة الصورة (مع الحفاظ على التناسب والسنترة)
-    this.drawImageFitted(ctx, image, 0, 0, canvasW, photoH);
+    // 2. رسم الصورة داخل منطقة الصورة (مع القص والسنترة الذكية)
+    this.drawImageSmartFramed(ctx, image, 0, 0, canvasW, photoH, {
+      zoom: framing.zoom ?? 1.0,
+      offsetX: framing.offsetX ?? 0,
+      offsetY: framing.offsetY ?? 0,
+      rotation: framing.rotation ?? 0,
+      autoCrop: framing.autoCrop ?? true
+    });
 
     // 3. رسم شريط الاسم والرقم القومي إن كان مفعلاً
     if (hasText) {
@@ -125,28 +137,130 @@ export class CardRenderer {
   }
 
   /**
-   * رسم الصورة وتوسيطها في المساحة المتاحة (Aspect Cover / Center)
+   * اكتشاف الإطار المحيط بالشخص المعزول تلقائياً من خلال قناة الشفافية Alpha
    */
-  static drawImageFitted(ctx, img, x, y, w, h) {
+  static getSubjectBounds(img) {
+    const w = img.naturalWidth || img.width;
+    const h = img.naturalHeight || img.height;
+    if (!w || !h) return { minX: 0, minY: 0, maxX: w, maxY: h, width: w, height: h };
+
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+
+    const imgData = ctx.getImageData(0, 0, w, h);
+    const data = imgData.data;
+
+    let minX = w, minY = h, maxX = 0, maxY = 0;
+    let found = false;
+
+    // فحص البكسلات غير الشفافة بخطوات سريعة
+    const step = Math.max(1, Math.floor(Math.min(w, h) / 400));
+    for (let y = 0; y < h; y += step) {
+      for (let x = 0; x < w; x += step) {
+        const alpha = data[(y * w + x) * 4 + 3];
+        if (alpha > 20) {
+          found = true;
+          if (x < minX) minX = x;
+          if (x > maxX) maxX = x;
+          if (y < minY) minY = y;
+          if (y > maxY) maxY = y;
+        }
+      }
+    }
+
+    if (!found || minX >= maxX || minY >= maxY) {
+      return { minX: 0, minY: 0, maxX: w, maxY: h, width: w, height: h };
+    }
+
+    // توسيع الإطار قليلاً كهامش أمان
+    const paddingX = Math.round((maxX - minX) * 0.02);
+    const paddingY = Math.round((maxY - minY) * 0.02);
+
+    minX = Math.max(0, minX - paddingX);
+    minY = Math.max(0, minY - paddingY);
+    maxX = Math.min(w, maxX + paddingX);
+    maxY = Math.min(h, maxY + paddingY);
+
+    return {
+      minX,
+      minY,
+      maxX,
+      maxY,
+      width: maxX - minX,
+      height: maxY - minY
+    };
+  }
+
+  /**
+   * رسم الصورة وتوسيطها وقصها تلقائياً للمقاسات الرسمية (Smart Auto Framing & Cropping)
+   */
+  static drawImageSmartFramed(ctx, img, targetX, targetY, targetW, targetH, options = {}) {
+    const {
+      zoom = 1.0,
+      offsetX = 0,    // كنسبة مئوية من العرض (-0.5 إلى +0.5)
+      offsetY = 0,    // كنسبة مئوية من الارتفاع (-0.5 إلى +0.5)
+      rotation = 0,   // زاوية التدوير بالدرجات
+      autoCrop = true
+    } = options;
+
     const imgW = img.naturalWidth || img.width;
     const imgH = img.naturalHeight || img.height;
 
-    const targetRatio = w / h;
-    const imgRatio = imgW / imgH;
-
-    let sx = 0, sy = 0, sw = imgW, sh = imgH;
-
-    if (imgRatio > targetRatio) {
-      // الصورة أعرض من الهدف، نقص الجوانب للتوسيط
-      sw = imgH * targetRatio;
-      sx = (imgW - sw) / 2;
-    } else {
-      // الصورة أطول، نقتطع من الأسفل قليلاً أو السنترة لحماية الرأس والوجه
-      sh = imgW / targetRatio;
-      sy = Math.max(0, (imgH - sh) * 0.25); // تركيز أكثر على الجزء العلوي لحفظ ملامح الوجه والشعر
+    let bounds = { minX: 0, minY: 0, maxX: imgW, maxY: imgH, width: imgW, height: imgH };
+    if (autoCrop) {
+      bounds = this.getSubjectBounds(img);
     }
 
-    ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+    const targetRatio = targetW / targetH;
+
+    // حساب مركز الشخص وحجمه
+    const subjectCenterX = bounds.minX + bounds.width / 2;
+    const subjectTopY = bounds.minY;
+    const subjectHeight = bounds.height;
+
+    // في الصور الرسمية (4x6 / جواز السفر)، يشغل الرأس والكتفين حوالي 78% من الارتفاع مع هامش علوي ~9%
+    let frameH = subjectHeight / 0.82;
+    let frameW = frameH * targetRatio;
+
+    // إذا كان العرض المطلوب أكبر من عرض الشخص، نضمن احتواء الكتفين
+    if (frameW < bounds.width * 1.15) {
+      frameW = bounds.width * 1.15;
+      frameH = frameW / targetRatio;
+    }
+
+    // تطبيق التكبير والتصغير
+    frameW /= Math.max(0.2, zoom);
+    frameH /= Math.max(0.2, zoom);
+
+    // حساب نقطة البداية (Source X, Y)
+    // الهامش العلوي القياسي للرأس في الصور الرسمية
+    const headroom = frameH * 0.09;
+    let sx = subjectCenterX - frameW / 2 + (offsetX * frameW);
+    let sy = subjectTopY - headroom + (offsetY * frameH);
+
+    ctx.save();
+
+    // إنشاء مساحة القص للكانفاس
+    ctx.beginPath();
+    ctx.rect(targetX, targetY, targetW, targetH);
+    ctx.clip();
+
+    // تطبيق التدوير حول مركز الهدف إن وجد
+    if (rotation !== 0) {
+      const cx = targetX + targetW / 2;
+      const cy = targetY + targetH / 2;
+      ctx.translate(cx, cy);
+      ctx.rotate((rotation * Math.PI) / 180);
+      ctx.translate(-cx, -cy);
+    }
+
+    // رسم الصورة مع التوسيط والقص الذكي
+    ctx.drawImage(img, sx, sy, frameW, frameH, targetX, targetY, targetW, targetH);
+
+    ctx.restore();
   }
 
   /**

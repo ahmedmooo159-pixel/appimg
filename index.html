@@ -204,7 +204,60 @@
           </div>
         </div>
 
-        <!-- 3. الاسم والرقم القومي -->
+        <!-- 3. القص والتوسيط والتكبير الذكي -->
+        <div class="controls-group">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <label class="controls-label" style="margin-bottom: 0;">
+              <span>القص والتوسيط الذكي (Auto-Framing)</span>
+              <small>تحديد تلقائي للشخص ومقاس الرأس</small>
+            </label>
+            <button id="btnResetFraming" class="btn-text-action" title="إعادة التوسيط والقص التلقائي">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                <path d="M3 3v5h5"/>
+              </svg>
+              توسيط تلقائي
+            </button>
+          </div>
+
+          <!-- سلايدر التكبير والتصغير -->
+          <div class="range-slider-row">
+            <div class="range-label-row">
+              <span>حجم الشخص في الإطار (Zoom):</span>
+              <span id="valZoom">100%</span>
+            </div>
+            <input type="range" id="sliderZoom" class="range-input" min="60" max="160" value="100" />
+          </div>
+
+          <!-- سلايدر الإزاحة الرأسية (أعلى / أسفل) -->
+          <div class="range-slider-row">
+            <div class="range-label-row">
+              <span>موضع الرأس (أعلى / أسفل):</span>
+              <span id="valOffsetY">0</span>
+            </div>
+            <input type="range" id="sliderOffsetY" class="range-input" min="-30" max="30" value="0" />
+          </div>
+
+          <!-- سلايدر الإزاحة الأفقية (يمين / يسار) -->
+          <div class="range-slider-row">
+            <div class="range-label-row">
+              <span>التوسيط الأفقي (يمين / يسار):</span>
+              <span id="valOffsetX">0</span>
+            </div>
+            <input type="range" id="sliderOffsetX" class="range-input" min="-30" max="30" value="0" />
+          </div>
+
+          <!-- سلايدر تعديل الميلان (Straighten / Rotation) -->
+          <div class="range-slider-row">
+            <div class="range-label-row">
+              <span>تعديل ميلان الصورة (Rotation):</span>
+              <span id="valRotation">0°</span>
+            </div>
+            <input type="range" id="sliderRotation" class="range-input" min="-20" max="20" value="0" />
+          </div>
+        </div>
+
+        <!-- 4. الاسم والرقم القومي -->
         <div class="controls-group">
           <label class="controls-label">
             <span>بيانات الشريط الرسمي (الاسم والرقم القومي)</span>

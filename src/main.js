@@ -28,6 +28,13 @@ const state = {
     brightness: 0,
     contrast: 10
   },
+  framing: {
+    zoom: 1.0,
+    offsetX: 0,
+    offsetY: 0,
+    rotation: 0,
+    autoCrop: true
+  },
   isProcessing: false
 };
 
@@ -57,6 +64,17 @@ const DOM = {
 
   presetSelector: document.getElementById('presetSelector'),
   bgColorSelector: document.getElementById('bgColorSelector'),
+
+  // عناصر التوسيط والقص والتكبير
+  sliderZoom: document.getElementById('sliderZoom'),
+  sliderOffsetY: document.getElementById('sliderOffsetY'),
+  sliderOffsetX: document.getElementById('sliderOffsetX'),
+  sliderRotation: document.getElementById('sliderRotation'),
+  valZoom: document.getElementById('valZoom'),
+  valOffsetY: document.getElementById('valOffsetY'),
+  valOffsetX: document.getElementById('valOffsetX'),
+  valRotation: document.getElementById('valRotation'),
+  btnResetFraming: document.getElementById('btnResetFraming'),
 
   inputName: document.getElementById('inputName'),
   inputNID: document.getElementById('inputNID'),
@@ -90,6 +108,7 @@ function init() {
   setupComparisonSlider();
   setupPresetEvents();
   setupBgColorEvents();
+  setupFramingControls();
   setupInputEvents();
   setupEnhancementSliders();
   setupExportButtons();
@@ -265,19 +284,15 @@ function reprocessEnhanceAndRender() {
 
   state.enhancedForeground = enhancedCanvas;
 
-  // 2. دمج الخلفية المختارة (أبيض افتراضياً)
-  const compositeCanvas = BackgroundRemover.compositeBackground(
-    enhancedCanvas,
-    state.selectedBgColor
-  );
-
-  // 3. الرسم النهائي مع الشريط والاسم والرقم القومي والمقاس
+  // 2. الرسم النهائي مع القص والتوسيط الذكي والشريط والاسم والرقم القومي
   const finalCanvas = CardRenderer.render({
-    image: compositeCanvas,
+    image: enhancedCanvas,
+    bgColor: state.selectedBgColor,
     name: state.fullName,
     nationalId: state.nationalId,
     presetKey: state.selectedPreset,
     badgeStyle: state.badgeStyle,
+    framing: state.framing,
     showBorder: true
   });
 
@@ -294,6 +309,53 @@ function reprocessEnhanceAndRender() {
   } else {
     DOM.previewDimensionsBadge.textContent = `${finalCanvas.width} × ${finalCanvas.height} px`;
   }
+}
+
+/**
+ * إعداد أدوات التحكم في التوسيط والتكبير والقص الذكي
+ */
+function setupFramingControls() {
+  let debounceTimer = null;
+
+  const handleFramingChange = () => {
+    state.framing.zoom = parseInt(DOM.sliderZoom.value, 10) / 100;
+    state.framing.offsetY = parseInt(DOM.sliderOffsetY.value, 10) / 100;
+    state.framing.offsetX = parseInt(DOM.sliderOffsetX.value, 10) / 100;
+    state.framing.rotation = parseInt(DOM.sliderRotation.value, 10);
+    state.framing.autoCrop = true;
+
+    updateFramingLabels();
+
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      reprocessEnhanceAndRender();
+    }, 30);
+  };
+
+  DOM.sliderZoom.addEventListener('input', handleFramingChange);
+  DOM.sliderOffsetY.addEventListener('input', handleFramingChange);
+  DOM.sliderOffsetX.addEventListener('input', handleFramingChange);
+  DOM.sliderRotation.addEventListener('input', handleFramingChange);
+
+  DOM.btnResetFraming.addEventListener('click', () => {
+    state.framing = { zoom: 1.0, offsetX: 0, offsetY: 0, rotation: 0, autoCrop: true };
+    DOM.sliderZoom.value = 100;
+    DOM.sliderOffsetY.value = 0;
+    DOM.sliderOffsetX.value = 0;
+    DOM.sliderRotation.value = 0;
+    updateFramingLabels();
+    reprocessEnhanceAndRender();
+    showToast('تمت إعادة ضبط التوسيط والقص التلقائي');
+  });
+
+  updateFramingLabels();
+}
+
+function updateFramingLabels() {
+  DOM.valZoom.textContent = `${DOM.sliderZoom.value}%`;
+  DOM.valOffsetY.textContent = DOM.sliderOffsetY.value > 0 ? `+${DOM.sliderOffsetY.value}` : `${DOM.sliderOffsetY.value}`;
+  DOM.valOffsetX.textContent = DOM.sliderOffsetX.value > 0 ? `+${DOM.sliderOffsetX.value}` : `${DOM.sliderOffsetX.value}`;
+  DOM.valRotation.textContent = `${DOM.sliderRotation.value}°`;
 }
 
 /**
