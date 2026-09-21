@@ -1,0 +1,25 @@
+{
+  "name": "smart-photo-processor",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "معالج الصور الشخصية والرسمية الذكي — إزالة الخلفية وتحسين الجودة مجاناً 100%",
+  "author": "Ahmed Murad",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "vite": "^8.3.0"
+  },
+  "dependencies": {
+    "@imgly/background-removal": "^1.7.0",
+    "canvas-confetti": "^1.9.4",
+    "jspdf": "^4.2.1"
+  }
+}

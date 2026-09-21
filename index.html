@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>معالج الصور الشخصية والرسمية الذكي | إزالة الخلفية وتحسين الجودة مجاناً 100%</title>
+  <meta name="description" content="تطبيق مجاني 100% لمعالجة الصور الشخصية، إزالة الخلفية وتبييضها، إزالة البكسلة وتحسين الجودة بدون تغيير ملامح الوجه، وإضافة الاسم والرقم القومي وتوليد ورقة طباعة A4." />
+  <meta name="theme-color" content="#090d16" />
+  <meta name="author" content="Ahmed Murad" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="معالج الصور الرسمية الذكي — إزالة الخلفية مجاناً" />
+  <meta property="og:description" content="عزل ذكي للخلفية، إزالة البكسلة، إضافة الاسم والرقم القومي، وتوليد ورقة طباعة A4 — مجاني 100% وخصوصية تامة." />
+  <meta property="og:image" content="/favicon.svg" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="معالج الصور الرسمية الذكي" />
+  <meta name="twitter:description" content="عزل ذكي للخلفية وتحسين جودة الصور الشخصية — مجاني 100%" />
+  
+  <!-- خطوط Google الرسمية الفاخرة (Cairo & Tajawal) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="./src/style.css" />
+</head>
+<body>
+
+  <!-- ترويسة التطبيق الفاخرة -->
+  <header class="header-container">
+    <a href="#" class="brand-logo">
+      <div class="brand-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-title">معالج الصور الرسمية الذكي</div>
+      </div>
+      <span class="brand-badge">إصدار البطاقة والرقم القومي</span>
+    </a>
+
+    <div class="header-badges">
+      <div class="tag-free">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="m9 12 2 2 4-4"/>
+        </svg>
+        <span>مجاني 100% • خصوصية تامة محلياً</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- المحتوى الرئيسي -->
+  <main class="app-container">
+
+    <!-- العنوان الترويجي -->
+    <section class="hero-section">
+      <h1 class="hero-title">
+        صورة شخصية رسمية <span>فائقة النقاء</span> بخلفية بيضاء وبدون بكسلة
+      </h1>
+      <p class="hero-subtitle">
+        عزل ذكي للخلفية، استعادة الحدة دون تغيير ملامحك الأصلية، إضافة الاسم والرقم القومي، وتوليد ورقة طباعة A4 فورية للمصالح الحكومية وجوازات السفر.
+      </p>
+    </section>
+
+    <!-- مساحة العمل الرئيسية -->
+    <div class="workspace-grid">
+
+      <!-- عمود المعاينة والمقارنة التفاعلية -->
+      <section class="glass-panel preview-panel">
+        <div class="panel-header">
+          <h2 class="panel-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><path d="m10 15 5-3-5-3v6z"/>
+            </svg>
+            معاينة النتيجة (مقارنة قبل وبعد)
+          </h2>
+          <span id="previewDimensionsBadge" class="brand-badge">جاهز</span>
+        </div>
+
+        <!-- منطقة الرفع إذا لم تكن هناك صورة -->
+        <div id="dropzoneArea" class="upload-dropzone">
+          <input type="file" id="fileInput" accept="image/png, image/jpeg, image/webp, image/jpg" style="display: none;" />
+          <div class="upload-icon-wrapper">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+          </div>
+          <h3 class="upload-title">اسحب وأفلت صورتك هنا، أو اضغط للاختيار</h3>
+          <p class="upload-desc">يدعم صيغ JPG, PNG, WEBP (الصور لا تُرفع لأي خادم، المعالجة تتم داخل جهازك)</p>
+          <div class="btn-row">
+            <button id="btnBrowseFile" class="btn btn-primary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+              </svg>
+              اختيار صورة من جهازك
+            </button>
+            <button id="btnLoadSample" class="btn btn-secondary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2v20"/><path d="m17 5-5-3-5 3"/><path d="m17 19-5 3-5-3"/>
+              </svg>
+              تجربة بصورة توضيحية
+            </button>
+          </div>
+        </div>
+
+        <!-- شريط حالة التحميل والمعالجة بالذكاء الاصطناعي -->
+        <div id="processingStatusBar" class="processing-status-bar" style="display: none;">
+          <div class="progress-header">
+            <span id="processingStatusText">جاري تهيئة نموذج الذكاء الاصطناعي...</span>
+            <span id="processingPercentText">0%</span>
+          </div>
+          <div class="progress-track">
+            <div id="processingProgressBar" class="progress-fill"></div>
+          </div>
+        </div>
+
+        <!-- منصة المعاينة التفاعلية مع سلايدر المقارنة -->
+        <div id="previewContainer" class="preview-stage" style="display: none; margin-top: 1rem;">
+          <span class="stage-badge badge-before">الأصلية</span>
+          <span class="stage-badge badge-after">المعالجة الرسمية</span>
+
+          <div class="comparison-wrapper" id="comparisonBox">
+            <!-- الصورة المعالجة (الخلفية) -->
+            <img id="processedImgView" class="comparison-img" alt="الصورة المعالجة" />
+
+            <!-- الصورة الأصلية (الطبقة العلوية المقصوصة) -->
+            <div class="comparison-overlay" id="comparisonOverlay">
+              <img id="originalImgView" class="comparison-img" alt="الصورة الأصلية" />
+            </div>
+
+            <!-- مقبض السلايدر التفاعلي -->
+            <div class="slider-handle" id="sliderHandle">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="15 18 9 12 15 6"/><polyline points="9 18 3 12 9 6"/>
+              </svg>
+            </div>
+
+            <!-- شريط التمرير الخفي للتحكم باللمس والماوس -->
+            <input type="range" id="comparisonRange" class="comparison-slider" min="0" max="100" value="50" />
+          </div>
+        </div>
+
+        <!-- أزرار العمليات السريعة أسفل المعاينة -->
+        <div id="previewToolbar" class="btn-row" style="margin-top: 1.25rem; display: none;">
+          <button id="btnChangePhoto" class="btn btn-secondary" style="font-size: 0.85rem; padding: 0.5rem 0.9rem;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+              <path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+              <path d="M8 16H3v5"/>
+            </svg>
+            تغيير الصورة
+          </button>
+          <button id="btnResetEnhance" class="btn btn-secondary" style="font-size: 0.85rem; padding: 0.5rem 0.9rem;">
+            إعادة ضبط الفلاتر
+          </button>
+        </div>
+      </section>
+
+      <!-- عمود أدوات التحكم والتعديل -->
+      <section class="glass-panel controls-panel">
+        
+        <!-- 1. المقاسات الرسمية -->
+        <div class="controls-group">
+          <label class="controls-label">
+            <span>المقاس والمواصفات الرسمية</span>
+            <small>نسبة الأبعاد القياسية</small>
+          </label>
+          <div class="presets-grid" id="presetSelector">
+            <div class="preset-chip active" data-preset="id_4x6">
+              <div class="chip-title">بطاقة واستمارة</div>
+              <div class="chip-subtitle">4 × 6 سم (المعيار المصري)</div>
+            </div>
+            <div class="preset-chip" data-preset="passport_35x45">
+              <div class="chip-title">جواز سفر</div>
+              <div class="chip-subtitle">3.5 × 4.5 سم (دولي)</div>
+            </div>
+            <div class="preset-chip" data-preset="visa_5x5">
+              <div class="chip-title">تأشيرة ومربع</div>
+              <div class="chip-subtitle">5 × 5 سم (2×2 بوصة)</div>
+            </div>
+            <div class="preset-chip" data-preset="original">
+              <div class="chip-title">الحجم الأصلي</div>
+              <div class="chip-subtitle">بدون اقتطاع</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. لون الخلفية -->
+        <div class="controls-group">
+          <label class="controls-label">
+            <span>لون الخلفية الرسمي</span>
+            <small>أبيض مطابق للشروط الحكومية</small>
+          </label>
+          <div class="color-options" id="bgColorSelector">
+            <div class="color-dot color-white active" data-color="#ffffff" title="أبيض ناصع (المطلوب رسمياً)"></div>
+            <div class="color-dot color-offwhite" data-color="#f8fafc" title="أوف وايت ناعم"></div>
+            <div class="color-dot color-lightgray" data-color="#e2e8f0" title="رمادي فاتح (سفارات وقنصليات)"></div>
+            <div class="color-dot color-blue" data-color="#1d4ed8" title="أزرق استوديو رسمي"></div>
+            <div class="color-dot color-transparent" data-color="transparent" title="مفرغة وشفافة (PNG)"></div>
+          </div>
+        </div>
+
+        <!-- 3. الاسم والرقم القومي -->
+        <div class="controls-group">
+          <label class="controls-label">
+            <span>بيانات الشريط الرسمي (الاسم والرقم القومي)</span>
+            <small>اختياري للبطاقات والكارنيهات</small>
+          </label>
+
+          <div class="input-wrapper">
+            <label class="input-label" for="inputName">الاسم بالكامل (عربي)</label>
+            <input type="text" id="inputName" class="form-input" placeholder="مثال: أحمد محمد علي حسن" dir="rtl" />
+          </div>
+
+          <div class="input-wrapper">
+            <label class="input-label" for="inputNID">الرقم القومي (14 رقماً)</label>
+            <input type="text" id="inputNID" class="form-input" maxlength="14" placeholder="مثال: 29804152100123" dir="ltr" style="text-align: right;" />
+            <!-- إشعار التدقيق الذكي للرقم القومي -->
+            <div id="nidStatusCard" class="nid-verification-card" style="display: none;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+              <span id="nidStatusText"></span>
+            </div>
+          </div>
+
+          <!-- شكل ونمط الشريط أسفل الصورة -->
+          <div style="display: flex; gap: 0.5rem; margin-top: 0.6rem;">
+            <button class="btn btn-secondary active-style" id="btnStyleStrip" style="flex: 1; font-size: 0.82rem; padding: 0.45rem;">
+              شريط رسمي كلاسيكي
+            </button>
+            <button class="btn btn-secondary" id="btnStyleBadge" style="flex: 1; font-size: 0.82rem; padding: 0.45rem;">
+              نمط كارنيه وهوية
+            </button>
+            <button class="btn btn-secondary" id="btnStyleNone" style="flex: 0.8; font-size: 0.82rem; padding: 0.45rem;">
+              بدون شريط
+            </button>
+          </div>
+        </div>
+
+        <!-- 4. تحسين الجودة وإزالة البكسلة بدون تغيير الملامح -->
+        <div class="controls-group">
+          <label class="controls-label">
+            <span>تحسين الجودة وإزالة البكسلة</span>
+            <small>خوارزمية حافظة للملامح</small>
+          </label>
+
+          <!-- زيادة الحدة وتفاصيل الملامح -->
+          <div class="range-slider-row">
+            <div class="range-label-row">
+              <span>حدة الملامح وتفاصيل العينين (Sharpness):</span>
+              <span id="valSharpness">45%</span>
+            </div>
+            <input type="range" id="sliderSharpness" class="range-input" min="0" max="100" value="45" />
+          </div>
+
+          <!-- إزالة البكسلة والتحبب -->
+          <div class="range-slider-row">
+            <div class="range-label-row">
+              <span>إزالة البكسلة والتحبب (De-Pixelate & Denoise):</span>
+              <span id="valDenoise">30%</span>
+            </div>
+            <input type="range" id="sliderDenoise" class="range-input" min="0" max="100" value="30" />
+          </div>
+
+          <!-- الإضاءة والسطوع -->
+          <div class="range-slider-row">
+            <div class="range-label-row">
+              <span>تفتيح وضبط الإضاءة (Brightness):</span>
+              <span id="valBrightness">0</span>
+            </div>
+            <input type="range" id="sliderBrightness" class="range-input" min="-40" max="40" value="0" />
+          </div>
+
+          <!-- التباين اللوني -->
+          <div class="range-slider-row">
+            <div class="range-label-row">
+              <span>التباين وتشبع الألوان (Contrast):</span>
+              <span id="valContrast">10%</span>
+            </div>
+            <input type="range" id="sliderContrast" class="range-input" min="-30" max="40" value="10" />
+          </div>
+        </div>
+
+        <!-- أزرار التصدير والطباعة -->
+        <div class="export-actions-grid">
+          <button id="btnDownloadSingle" class="btn btn-success" disabled>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            تحميل الصورة الفردية (PNG عالي الدقة)
+          </button>
+
+          <button id="btnDownloadSheet" class="btn btn-primary" disabled>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/>
+              <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
+            </svg>
+            توليد ورقة طباعة A4 (8 صور مع خطوط قص)
+          </button>
+        </div>
+
+        <button id="btnDownloadPDF" class="btn btn-secondary" style="width: 100%; margin-top: 0.75rem;" disabled>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+          </svg>
+          تصدير ملف PDF جاهز للطباعة مباشرة
+        </button>
+
+      </section>
+    </div>
+
+    <!-- ميزات وضمانات الخصوصية والأمان -->
+    <div class="features-pills">
+      <div class="pill-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <span>أمان وخصوصية تامة (معالجة داخل المتصفح بنسبة 100%)</span>
+      </div>
+      <div class="pill-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>
+        </svg>
+        <span>حفظ تام للملامح الحقيقية بدون تزييف ذكاء اصطناعي</span>
+      </div>
+      <div class="pill-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+        <span>دقة طباعة رسمية 300 DPI ومقاس 4×6 سم معتمد</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- تذييل الصفحة الفاخر بتوقيع المطور أحمد مراد -->
+  <footer class="app-footer">
+    <div class="footer-card">
+      <div class="developer-badge">
+        <div class="dev-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <div class="footer-texts">
+          <div class="footer-ar">تم تطوير وتصميم الموقع بواسطة <strong>أحمد مراد</strong></div>
+          <div class="footer-en">Developed & Designed by <strong>Ahmed Murad</strong></div>
+        </div>
+      </div>
+      <div class="footer-meta">
+        <span class="footer-status-dot"></span>
+        <span>إصدار استوديو الصور الخاص بمكتبة المستقبل</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- حاوية التنبيهات المنبثقة (Toasts) -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- ملف الجافاسكريبت الرئيسي -->
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
