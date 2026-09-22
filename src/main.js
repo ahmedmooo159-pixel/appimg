@@ -50,6 +50,7 @@ const DOM = {
   inputRemoveBgKey: document.getElementById('inputRemoveBgKey'),
   btnTestRemoveBgKey: document.getElementById('btnTestRemoveBgKey'),
   removeBgTestResult: document.getElementById('removeBgTestResult'),
+  inputEnhancerKey: document.getElementById('inputEnhancerKey'),
   inputHfApiKey: document.getElementById('inputHfApiKey'),
   btnTestApiKey: document.getElementById('btnTestApiKey'),
   keyTestResult: document.getElementById('keyTestResult'),
@@ -146,6 +147,7 @@ function setupSettingsModal() {
 
   DOM.btnOpenSettings.addEventListener('click', () => {
     DOM.inputRemoveBgKey.value = CloudAiService.getRemoveBgKey();
+    DOM.inputEnhancerKey.value = CloudAiService.getEnhancerKey();
     DOM.inputHfApiKey.value = CloudAiService.getApiKey();
     DOM.removeBgTestResult.style.display = 'none';
     DOM.keyTestResult.style.display = 'none';
@@ -252,6 +254,9 @@ function setupSettingsModal() {
     const removeBgKey = DOM.inputRemoveBgKey.value.trim();
     CloudAiService.setRemoveBgKey(removeBgKey);
 
+    const enhancerKey = DOM.inputEnhancerKey.value.trim();
+    CloudAiService.setEnhancerKey(enhancerKey);
+
     const hfKey = DOM.inputHfApiKey.value.trim();
     CloudAiService.setApiKey(hfKey);
 
@@ -263,18 +268,20 @@ function setupSettingsModal() {
 
     DOM.settingsModal.style.display = 'none';
     updateHeaderStatus();
-    showToast('تم حفظ إعدادات الذكاء الاصطناعي بنجاح!', 'success');
+    showToast('تم حفظ إعدادات الذكاء الاصطناعي والمفاتيح بنجاح!', 'success');
   });
 
   DOM.btnClearApiKey.addEventListener('click', () => {
     CloudAiService.setRemoveBgKey(CloudAiService.REMOVE_BG_DEFAULT_KEY);
+    CloudAiService.setEnhancerKey(CloudAiService.ENHANCER_DEFAULT_KEY);
     CloudAiService.setApiKey('');
     DOM.inputRemoveBgKey.value = CloudAiService.REMOVE_BG_DEFAULT_KEY;
+    DOM.inputEnhancerKey.value = CloudAiService.ENHANCER_DEFAULT_KEY;
     DOM.inputHfApiKey.value = '';
     DOM.removeBgTestResult.style.display = 'none';
     DOM.keyTestResult.style.display = 'none';
     updateHeaderStatus();
-    showToast('تمت استعادة الإعدادات الافتراضية بنجاح!');
+    showToast('تمت استعادة الإعدادات والمفاتيح الافتراضية بنجاح!');
   });
 
   updateHeaderStatus();

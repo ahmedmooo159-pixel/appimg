@@ -10,11 +10,43 @@ export class CloudAiService {
   // المفتاح الافتراضي المدمج لـ Remove.bg
   static REMOVE_BG_DEFAULT_KEY = 'ZFxK6taN5wMbgSAoCpucrAhd';
 
+  // المفتاح الافتراضي لتحسين الجودة والترميم
+  static ENHANCER_DEFAULT_KEY = '4UZSOZOBL3ED5WO86TLMI1RO';
+
   static HF_ENDPOINTS = [
     'https://router.huggingface.co/hf-inference/models/briaai/RMBG-1.4',
     'https://router.huggingface.co/hf-inference/models/briaai/RMBG-2.0'
   ];
   static HF_RESTORE_MODEL = 'https://router.huggingface.co/hf-inference/models/akhaliq/GFPGAN';
+
+  /**
+   * استرجاع مفتاح تحسين الجودة المحفوظ أو الافتراضي
+   */
+  static getEnhancerKey() {
+    const saved = localStorage.getItem('enhancer_api_key');
+    if (saved !== null) {
+      return saved.trim();
+    }
+    return this.ENHANCER_DEFAULT_KEY;
+  }
+
+  /**
+   * حفظ مفتاح تحسين الجودة
+   */
+  static setEnhancerKey(key) {
+    if (key && key.trim()) {
+      localStorage.setItem('enhancer_api_key', key.trim());
+    } else {
+      localStorage.removeItem('enhancer_api_key');
+    }
+  }
+
+  /**
+   * فحص هل مفتاح تحسين الجودة متوفر
+   */
+  static hasEnhancerKey() {
+    return !!this.getEnhancerKey();
+  }
 
   /**
    * استرجاع مفتاح Remove.bg المحفوظ أو الافتراضي
