@@ -436,7 +436,7 @@
 
       <div class="modal-body">
         <p class="modal-description">
-          يتيح لك التطبيق التبديل بين <strong>المحرك السحابي فائق الجودة (Hugging Face RMBG-1.4 4K)</strong> و<strong>المحرك المحلي الفوري داخل المتصفح</strong>.
+          يتيح لك التطبيق التبديل بين <strong>محرك Remove.bg الاحترافي المدمج</strong>، أو <strong>سحابة Hugging Face RMBG</strong>، أو <strong>المحرك المحلي الفوري بدون إنترنت</strong>.
         </p>
 
         <!-- اختيار نوع المحرك -->
@@ -447,30 +447,52 @@
               <input type="radio" name="engineMode" value="auto" checked />
               <div class="engine-card-content">
                 <strong>🔄 تلقائي ذكي (موصى به)</strong>
-                <small>يستخدم الذكاء السحابي إذا وجد المفتاح، أو المحلي تلقائياً</small>
+                <small>Remove.bg أولاً، ثم Hugging Face، ثم المحلي تلقائياً</small>
               </div>
             </label>
             <label class="engine-option-card">
               <input type="radio" name="engineMode" value="cloud" />
               <div class="engine-card-content">
-                <strong>🚀 سحابي فائق (RMBG-1.4 + GFPGAN)</strong>
-                <small>أعلى دقة استوديو 4K لعزل الشعر وترميم الصور المطبوعة</small>
+                <strong>🚀 سحابي فائق (Remove.bg + RMBG)</strong>
+                <small>أعلى دقة استوديو لعزل أدق خصلات الشعر والملامح</small>
               </div>
             </label>
             <label class="engine-option-card">
               <input type="radio" name="engineMode" value="local" />
               <div class="engine-card-content">
                 <strong>⚡ محلي فوري (WASM Offline)</strong>
-                <small>يعمل داخل المتصفح بدون أي مفاتيح أو اتصال خارجي</small>
+                <small>معالجة داخل المتصفح بنسبة 100% بدون أي خوادم</small>
               </div>
             </label>
           </div>
         </div>
 
-        <!-- إدخال مفتاح API المجاني -->
+        <!-- 1. مفتاح Remove.bg المدمج -->
+        <div class="form-group" style="margin-top: 1.25rem; background: rgba(56, 189, 248, 0.05); padding: 1rem; border-radius: 10px; border: 1px solid rgba(56, 189, 248, 0.2);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+            <label class="form-label" for="inputRemoveBgKey" style="margin: 0;">
+              <span>مفتاح محرك Remove.bg (مدمج وجاهز):</span>
+            </label>
+            <span class="brand-badge" style="background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4);">
+              ✓ مفعّل 50 عملية مجاناً
+            </span>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <input type="password" id="inputRemoveBgKey" class="form-input" placeholder="ZFxK6taN5wMbgSAoCpucrAhd" dir="ltr" style="flex: 1;" />
+            <button id="btnTestRemoveBgKey" type="button" class="btn btn-secondary" style="white-space: nowrap; font-size: 0.85rem; padding: 0.6rem 0.9rem;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+              </svg>
+              فحص الرصيد
+            </button>
+          </div>
+          <div id="removeBgTestResult" style="display: none; margin-top: 0.5rem; font-size: 0.85rem; padding: 0.6rem 0.8rem; border-radius: 8px;"></div>
+        </div>
+
+        <!-- 2. مفتاح Hugging Face الاختياري -->
         <div class="form-group" style="margin-top: 1rem;">
           <label class="form-label" for="inputHfApiKey">
-            <span>مفتاح Hugging Face Access Token (مجاني 100%):</span>
+            <span>مفتاح Hugging Face Access Token (اختياري / بديل سحابي):</span>
           </label>
           <div style="display: flex; gap: 0.5rem; align-items: center;">
             <input type="password" id="inputHfApiKey" class="form-input" placeholder="hf_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" dir="ltr" style="flex: 1;" />
@@ -478,30 +500,17 @@
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
               </svg>
-              اختبار المفتاح
+              اختبار
             </button>
           </div>
           
           <div id="keyTestResult" style="display: none; margin-top: 0.5rem; font-size: 0.85rem; padding: 0.6rem 0.8rem; border-radius: 8px;"></div>
-
-          <div class="api-help-box" style="margin-top: 0.75rem;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
-              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-            </svg>
-            <div>
-              <span>كيف تحصل على مفتاحك المجاني في 30 ثانية؟</span>
-              <a href="https://huggingface.co/settings/tokens" target="_blank" rel="noopener noreferrer">
-                اضغط هنا لفتح صفحة Hugging Face Tokens ↗
-              </a>
-              (سجّل مجاناً واضغط <strong>Create new token</strong> ثم اختر <strong>Read</strong> أو فعّل <strong>Make calls to Inference Providers</strong> ثم الصقه هنا).
-            </div>
-          </div>
         </div>
       </div>
 
       <div class="modal-footer">
         <button id="btnSaveSettings" class="btn btn-primary" style="flex: 1;">حفظ الإعدادات</button>
-        <button id="btnClearApiKey" class="btn btn-secondary" style="flex: 0.6;">مسح المفتاح</button>
+        <button id="btnClearApiKey" class="btn btn-secondary" style="flex: 0.6;">إعادة للوضع الافتراضي</button>
       </div>
     </div>
   </div>

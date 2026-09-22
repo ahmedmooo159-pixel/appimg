@@ -14,16 +14,17 @@ export class BackgroundRemover {
     const imageBlob = await this._imgToBlob(imgElement);
 
     // 2. فحص إمكانية استخدام الذكاء الاصطناعي السحابي فائق الجودة
-    const shouldUseCloud = (engineMode === 'cloud') || (engineMode === 'auto' && CloudAiService.hasApiKey());
+    const hasAnyCloudKey = CloudAiService.hasRemoveBgKey() || CloudAiService.hasApiKey();
+    const shouldUseCloud = (engineMode === 'cloud') || (engineMode === 'auto' && hasAnyCloudKey);
 
     if (shouldUseCloud) {
       try {
-        const cloudBlob = await CloudAiService.removeBackgroundCloud(imageBlob, null, onProgress);
+        const cloudBlob = await CloudAiService.removeBackgroundCloud(imageBlob, onProgress);
         onProgress({ stage: 'complete', percent: 100, message: 'تم العزل السحابي بنجاح بدقة استوديو! ✨' });
         return cloudBlob;
       } catch (cloudErr) {
-        console.warn('Cloud removal failed or model loading, falling back to local engine:', cloudErr);
-        onProgress({ stage: 'fallback', percent: 20, message: 'جاري التبديل للمحرك المحلي السريع...' });
+        console.warn('Cloud removal failed, falling back to local engine:', cloudErr);
+        onProgress({ stage: 'fallback', percent: 20, message: 'جاري التبديل للمحرك المحلي الفوري...' });
       }
     }
 
@@ -31,9 +32,9 @@ export class BackgroundRemover {
       onProgress({ stage: 'starting', percent: 15, message: 'جاري تهيئة نموذج الذكاء الاصطناعي المحلي...' });
       onProgress({ stage: 'computing', percent: 30, message: 'جاري تحليل الصورة وعزل الشخص بالذكاء الاصطناعي...' });
 
-      // استخدام @imgly/background-removal بنموذج ISNet FP16 السريع والدقيق
+      // استخدام @imgly/background-removal بنموذج ISNet FP16 السريع والدقيق مع مسار CDN الرسمي الصالح
       const resultBlob = await removeBackground(imageBlob, {
-        publicPath: 'https://cdn.jsdelivr.net/npm/@imgly/background-removal-data@1.7.0/dist/',
+        publicPath: 'https://staticimgly.com/@imgly/background-removal-data/1.7.0/dist/',
         model: 'isnet_fp16',
         output: {
           format: 'image/png',

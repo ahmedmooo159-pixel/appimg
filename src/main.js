@@ -47,7 +47,12 @@ const DOM = {
   btnOpenSettings: document.getElementById('btnOpenSettings'),
   btnCloseSettings: document.getElementById('btnCloseSettings'),
   settingsModal: document.getElementById('settingsModal'),
+  inputRemoveBgKey: document.getElementById('inputRemoveBgKey'),
+  btnTestRemoveBgKey: document.getElementById('btnTestRemoveBgKey'),
+  removeBgTestResult: document.getElementById('removeBgTestResult'),
   inputHfApiKey: document.getElementById('inputHfApiKey'),
+  btnTestApiKey: document.getElementById('btnTestApiKey'),
+  keyTestResult: document.getElementById('keyTestResult'),
   btnSaveSettings: document.getElementById('btnSaveSettings'),
   btnClearApiKey: document.getElementById('btnClearApiKey'),
   headerEngineStatusText: document.getElementById('headerEngineStatusText'),
@@ -125,16 +130,25 @@ function init() {
  */
 function setupSettingsModal() {
   const updateHeaderStatus = () => {
-    const hasKey = CloudAiService.hasApiKey();
-    if (state.engineMode === 'cloud' || (state.engineMode === 'auto' && hasKey)) {
-      DOM.headerEngineStatusText.textContent = '🚀 سحابي فائق (RMBG-1.4 4K)';
+    const hasRemoveBg = CloudAiService.hasRemoveBgKey();
+    const hasHf = CloudAiService.hasApiKey();
+
+    if (state.engineMode === 'cloud' || (state.engineMode === 'auto' && (hasRemoveBg || hasHf))) {
+      if (hasRemoveBg) {
+        DOM.headerEngineStatusText.textContent = '✨ Remove.bg الاحترافي (مفعّل)';
+      } else {
+        DOM.headerEngineStatusText.textContent = '🚀 سحابي RMBG (مفعّل)';
+      }
     } else {
       DOM.headerEngineStatusText.textContent = '⚡ محرك محلي فوري';
     }
   };
 
   DOM.btnOpenSettings.addEventListener('click', () => {
+    DOM.inputRemoveBgKey.value = CloudAiService.getRemoveBgKey();
     DOM.inputHfApiKey.value = CloudAiService.getApiKey();
+    DOM.removeBgTestResult.style.display = 'none';
+    DOM.keyTestResult.style.display = 'none';
     const radio = document.querySelector(`input[name="engineMode"][value="${state.engineMode}"]`);
     if (radio) radio.checked = true;
     DOM.settingsModal.style.display = 'flex';
@@ -150,9 +164,96 @@ function setupSettingsModal() {
     }
   });
 
-  DOM.btnSaveSettings.addEventListener('click', () => {
+  // فحص رصيد ومفتاح Remove.bg
+  DOM.btnTestRemoveBgKey.addEventListener('click', async () => {
+    const key = DOM.inputRemoveBgKey.value.trim();
+    if (!key) {
+      DOM.removeBgTestResult.style.display = 'block';
+      DOM.removeBgTestResult.style.background = 'rgba(239, 68, 68, 0.15)';
+      DOM.removeBgTestResult.style.color = '#ef4444';
+      DOM.removeBgTestResult.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+      DOM.removeBgTestResult.textContent = '⚠️ يرجى إدخال المفتاح أولاً';
+      return;
+    }
+
+    DOM.btnTestRemoveBgKey.disabled = true;
+    DOM.btnTestRemoveBgKey.textContent = 'جاري الفحص...';
+    DOM.removeBgTestResult.style.display = 'block';
+    DOM.removeBgTestResult.style.background = 'rgba(56, 189, 248, 0.15)';
+    DOM.removeBgTestResult.style.color = '#38bdf8';
+    DOM.removeBgTestResult.style.border = '1px solid rgba(56, 189, 248, 0.3)';
+    DOM.removeBgTestResult.textContent = 'جاري الاتصال بخوادم Remove.bg للتحقق من الرصيد والمفتاح...';
+
+    const result = await CloudAiService.testRemoveBgKey(key);
+    DOM.btnTestRemoveBgKey.disabled = false;
+    DOM.btnTestRemoveBgKey.innerHTML = `
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+      </svg>
+      فحص الرصيد
+    `;
+
+    if (result.success) {
+      DOM.removeBgTestResult.style.background = 'rgba(16, 185, 129, 0.15)';
+      DOM.removeBgTestResult.style.color = '#10b981';
+      DOM.removeBgTestResult.style.border = '1px solid rgba(16, 185, 129, 0.3)';
+      DOM.removeBgTestResult.textContent = `✓ ${result.message}`;
+    } else {
+      DOM.removeBgTestResult.style.background = 'rgba(239, 68, 68, 0.15)';
+      DOM.removeBgTestResult.style.color = '#ef4444';
+      DOM.removeBgTestResult.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+      DOM.removeBgTestResult.textContent = `✕ ${result.message}`;
+    }
+  });
+
+  // زر اختبار مفتاح Hugging Face
+  DOM.btnTestApiKey.addEventListener('click', async () => {
     const key = DOM.inputHfApiKey.value.trim();
-    CloudAiService.setApiKey(key);
+    if (!key) {
+      DOM.keyTestResult.style.display = 'block';
+      DOM.keyTestResult.style.background = 'rgba(239, 68, 68, 0.15)';
+      DOM.keyTestResult.style.color = '#ef4444';
+      DOM.keyTestResult.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+      DOM.keyTestResult.textContent = '⚠️ يرجى لصق المفتاح في الحقل أولاً';
+      return;
+    }
+
+    DOM.btnTestApiKey.disabled = true;
+    DOM.btnTestApiKey.textContent = 'جاري الفحص...';
+    DOM.keyTestResult.style.display = 'block';
+    DOM.keyTestResult.style.background = 'rgba(56, 189, 248, 0.15)';
+    DOM.keyTestResult.style.color = '#38bdf8';
+    DOM.keyTestResult.style.border = '1px solid rgba(56, 189, 248, 0.3)';
+    DOM.keyTestResult.textContent = 'جاري الاتصال بـ Hugging Face للتحقق من المفتاح...';
+
+    const result = await CloudAiService.testApiKey(key);
+    DOM.btnTestApiKey.disabled = false;
+    DOM.btnTestApiKey.innerHTML = `
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+      </svg>
+      اختبار
+    `;
+
+    if (result.success) {
+      DOM.keyTestResult.style.background = 'rgba(16, 185, 129, 0.15)';
+      DOM.keyTestResult.style.color = '#10b981';
+      DOM.keyTestResult.style.border = '1px solid rgba(16, 185, 129, 0.3)';
+      DOM.keyTestResult.textContent = `✓ ${result.message}`;
+    } else {
+      DOM.keyTestResult.style.background = 'rgba(239, 68, 68, 0.15)';
+      DOM.keyTestResult.style.color = '#ef4444';
+      DOM.keyTestResult.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+      DOM.keyTestResult.textContent = `✕ ${result.message}`;
+    }
+  });
+
+  DOM.btnSaveSettings.addEventListener('click', () => {
+    const removeBgKey = DOM.inputRemoveBgKey.value.trim();
+    CloudAiService.setRemoveBgKey(removeBgKey);
+
+    const hfKey = DOM.inputHfApiKey.value.trim();
+    CloudAiService.setApiKey(hfKey);
 
     const selectedRadio = document.querySelector('input[name="engineMode"]:checked');
     if (selectedRadio) {
@@ -166,10 +267,14 @@ function setupSettingsModal() {
   });
 
   DOM.btnClearApiKey.addEventListener('click', () => {
+    CloudAiService.setRemoveBgKey(CloudAiService.REMOVE_BG_DEFAULT_KEY);
     CloudAiService.setApiKey('');
+    DOM.inputRemoveBgKey.value = CloudAiService.REMOVE_BG_DEFAULT_KEY;
     DOM.inputHfApiKey.value = '';
+    DOM.removeBgTestResult.style.display = 'none';
+    DOM.keyTestResult.style.display = 'none';
     updateHeaderStatus();
-    showToast('تم مسح المفتاح والعودة للمحرك المحلي');
+    showToast('تمت استعادة الإعدادات الافتراضية بنجاح!');
   });
 
   updateHeaderStatus();
