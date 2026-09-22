@@ -472,9 +472,19 @@
           <label class="form-label" for="inputHfApiKey">
             <span>مفتاح Hugging Face Access Token (مجاني 100%):</span>
           </label>
-          <input type="password" id="inputHfApiKey" class="form-input" placeholder="hf_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" dir="ltr" />
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <input type="password" id="inputHfApiKey" class="form-input" placeholder="hf_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" dir="ltr" style="flex: 1;" />
+            <button id="btnTestApiKey" type="button" class="btn btn-secondary" style="white-space: nowrap; font-size: 0.85rem; padding: 0.6rem 0.9rem;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+              </svg>
+              اختبار المفتاح
+            </button>
+          </div>
           
-          <div class="api-help-box">
+          <div id="keyTestResult" style="display: none; margin-top: 0.5rem; font-size: 0.85rem; padding: 0.6rem 0.8rem; border-radius: 8px;"></div>
+
+          <div class="api-help-box" style="margin-top: 0.75rem;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
               <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
             </svg>
@@ -483,7 +493,7 @@
               <a href="https://huggingface.co/settings/tokens" target="_blank" rel="noopener noreferrer">
                 اضغط هنا لفتح صفحة Hugging Face Tokens ↗
               </a>
-              (سجّل مجاناً واضغط <strong>Create new token</strong> واختر نوع <strong>Read</strong> ثم انسخه هنا).
+              (سجّل مجاناً واضغط <strong>Create new token</strong> ثم اختر <strong>Read</strong> أو فعّل <strong>Make calls to Inference Providers</strong> ثم الصقه هنا).
             </div>
           </div>
         </div>
